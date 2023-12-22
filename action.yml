@@ -1,0 +1,18 @@
+name: 'Update major/minor semver'
+description: 'Updates major/minor release tags on a tag push'
+# credits to github.com/haya14busa/
+author: 'splunk'
+inputs:
+  message:
+    description: 'Tag message.'
+    required: false
+  major_version_tag_only:
+    description: 'Optional. Create only major version tags.'
+    required: false
+  minor_version_tag_only:
+    description: 'Optional. Create only minor version tags.'
+    required: false
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
