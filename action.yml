@@ -3,7 +3,7 @@ description: 'Updates major/minor release tags on a tag push'
 author: 'splunk'
 inputs:
   github_token:
-    description: 'GITHUB_TOKEN. Optional if you use checkout@v4 action.'
+    description: 'GITHUB_TOKEN. Optional if you use checkout@v1 action.'
     default: '${{ github.token }}'
   tag:
     description: 'Optional. Existing tag to update from. Default comes from $GITHUB_REF.'
