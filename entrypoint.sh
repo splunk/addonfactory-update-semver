@@ -21,13 +21,19 @@ MESSAGE="${INPUT_MESSAGE:-Release ${TAG}}"
 git config user.name "${GITHUB_ACTOR}"
 git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
-# Update MAJOR/MINOR tag based on MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY parameters
+# Update MAJOR/MINOR tag based on MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY parametersif [ "${MINOR_VERSION_TAG_ONLY}" = "true" ] && [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then echo "Error: Both MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY cannot be true." exit 1 fi if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ]; then git tag -fa "${MINOR}" -m "${MESSAGE}" elif [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then git tag -fa "${MAJOR}" -m "${MESSAGE}" else git tag -fa "${MINOR}" -m "${MESSAGE}" git tag -fa "${MAJOR}" -m "${MESSAGE}" fi
+if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ] && [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then
+  echo "Error: Both MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY cannot be true."
+  exit 1
+fi
+
 if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ]; then
   git tag -fa "${MINOR}" -m "${MESSAGE}"
-  [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ] || git tag -fa "${MAJOR}" -m "${MESSAGE}"
-else
+elif [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then
   git tag -fa "${MAJOR}" -m "${MESSAGE}"
-  [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ] || git tag -fa "${MINOR}" -m "${MESSAGE}"
+else
+  git tag -fa "${MINOR}" -m "${MESSAGE}"
+  git tag -fa "${MAJOR}" -m "${MESSAGE}"
 fi
 
 # Set up remote URL for checkout@v1 action.
