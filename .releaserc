@@ -1,19 +1,13 @@
 {
     "branches": [
         '+([0-9])?(.{+([0-9]),x}).x',
-        'main',
-        'next',
-        'next-major',
-        {
-        name: 'develop',
-        prerelease: true
-        }
+        'main'
     ],
     plugins: [
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
         ["@semantic-release/exec", {
-            "prepareCmd": 'yq -i eval ".runs.image = \"docker://ghcr.io/splunk/appinspect-api-action/appinspect-api-action:v${nextRelease.version}\"" action.yml',
+            "prepareCmd": 'yq -i eval ".runs.image = \"docker://ghcr.io/splunk/addonfactory-update-semver/addonfactory-update-semver:v${nextRelease.version}\"" action.yml',
             "verifyReleaseCmd": "echo \"version=${nextRelease.version}\" >> $GITHUB_OUTPUT",
             "successCmd": "echo \"new_release_published=${'true'}\" >> $GITHUB_OUTPUT"
         }],
