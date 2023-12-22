@@ -16,5 +16,4 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          docker pull ghcr.io/splunk/addonfactory-update-semver/addonfactory-update-semver:v1.0.1
+      - uses: ./
