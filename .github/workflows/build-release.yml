@@ -25,7 +25,8 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/metadata-action@v5
+      - id: docker_action_meta
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/splunk/addonfactory-update-semver/addonfactory-update-semver
           tags: |
