@@ -1,13 +1,8 @@
 name: 'Update major/minor semver'
 description: 'Updates major/minor release tags on a tag push'
+# credits to github.com/haya14busa/
 author: 'splunk'
 inputs:
-  github_token:
-    description: 'GITHUB_TOKEN. Optional if you use checkout@v1 action.'
-    default: '${{ github.token }}'
-  tag:
-    description: 'Optional. Existing tag to update from. Default comes from $GITHUB_REF.'
-    required: false
   message:
     description: 'Tag message.'
     required: false

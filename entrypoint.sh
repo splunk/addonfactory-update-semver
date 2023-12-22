@@ -4,7 +4,7 @@ set -x
 cd "${GITHUB_WORKSPACE}" || exit
 
 # Set up variables.
-TAG="${INPUT_TAG:-${GITHUB_REF#refs/tags/}}" # v1.2.3
+TAG="${GITHUB_REF#refs/tags/}"               # v1.2.3
 MINOR="${TAG%.*}"                            # v1.2
 MAJOR="${MINOR%.*}"                          # v1
 MAJOR_VERSION_TAG_ONLY=${INPUT_MAJOR_VERSION_TAG_ONLY:-}
@@ -21,7 +21,7 @@ MESSAGE="${INPUT_MESSAGE:-Release ${TAG}}"
 git config user.name "${GITHUB_ACTOR}"
 git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
-# Update MAJOR/MINOR tag based on MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY parametersif [ "${MINOR_VERSION_TAG_ONLY}" = "true" ] && [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then echo "Error: Both MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY cannot be true." exit 1 fi if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ]; then git tag -fa "${MINOR}" -m "${MESSAGE}" elif [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then git tag -fa "${MAJOR}" -m "${MESSAGE}" else git tag -fa "${MINOR}" -m "${MESSAGE}" git tag -fa "${MAJOR}" -m "${MESSAGE}" fi
+# Update MAJOR/MINOR tag based on MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY parameters
 if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ] && [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then
   echo "Error: Both MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY cannot be true."
   exit 1
@@ -34,11 +34,6 @@ elif [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then
 else
   git tag -fa "${MINOR}" -m "${MESSAGE}"
   git tag -fa "${MAJOR}" -m "${MESSAGE}"
-fi
-
-# Set up remote URL for checkout@v1 action.
-if [ -n "${INPUT_GITHUB_TOKEN}" ]; then
-  git remote set-url origin "https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 fi
 
 # Push based on MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY parameters
