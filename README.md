@@ -4,7 +4,6 @@ This GitHub Action automates the tagging and release process based on version ta
 
 For example this action will update v1 and v1.2 tag when released v1.2.3.
 
-
 ## Inputs
 
 - `message` (optional): Tag message. Defaults to "Release {TAG}" if not provided.
@@ -25,10 +24,10 @@ jobs:
   update-semver:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: splunk/addonfactory-update-semver@v1
         with:
           major_version_tag_only: true 
 ```
 
-###### Additional credits to [github.com/haya14busa](github.com/haya14busa/action-update-semver)
+###### Additional credits to [github.com/haya14busa](https://github.com/haya14busa/action-update-semver)
