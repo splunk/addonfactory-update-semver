@@ -14,4 +14,4 @@ inputs:
     required: false
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/splunk/addonfactory-update-semver/addonfactory-update-semver:v1.0.8'
+  image: 'docker://ghcr.io/splunk/addonfactory-update-semver/addonfactory-update-semver:v1.0.9'
