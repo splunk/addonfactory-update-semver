@@ -4,14 +4,84 @@ description: 'Updates major/minor release tags on a tag push'
 author: 'splunk'
 inputs:
   message:
-    description: 'Tag message.'
+    description: "Tag message."
     required: false
   major_version_tag_only:
-    description: 'Optional. Create only major version tags.'
+    description: "Create only major version tags."
     required: false
   minor_version_tag_only:
-    description: 'Optional. Create only minor version tags.'
+    description: "Create only minor version tags."
+    required: false
+  git_committer_name:
+    description: "Committer name for semver changes"
+    required: false
+    default: "semantic-release-bot"
+  git_committer_email:
+    description: "Committer email address for semver changes"
+    required: false
+    default: "semantic-release-bot"
+  gpg_private_key:
+    description: "GPG private key matching committer email"
+    required: false
+  passphrase:
+    description: "Passphrase for GPG private key"
     required: false
 runs:
-  using: 'docker'
-  image: 'docker://ghcr.io/splunk/addonfactory-update-semver/addonfactory-update-semver:v1.0.9'
+  using: "composite"
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+    - name: Set up GPG
+      uses: crazy-max/ghaction-import-gpg@v6
+      if: ${{ (inputs.gpg_private_key != '') && (inputs.passphrase != '') }}
+      with:
+        gpg_private_key: ${{ inputs.gpg_private_key }}
+        passphrase: ${{ inputs.passphrase }}
+        git_user_signingkey: true
+        git_commit_gpgsign: true
+    - name: 
+      run: |
+        TAG="${GITHUB_REF#refs/tags/}"               # v1.2.3
+        MINOR="${TAG%.*}"                            # v1.2
+        MAJOR="${MINOR%.*}"                          # v1
+        MAJOR_VERSION_TAG_ONLY=${INPUT_MAJOR_VERSION_TAG_ONLY:-}
+        MINOR_VERSION_TAG_ONLY=${INPUT_MINOR_VERSION_TAG_ONLY:-}
+
+        if [ "${GITHUB_REF}" = "${TAG}" ]; then
+          echo "This workflow is not triggered by tag push: GITHUB_REF=${GITHUB_REF}"
+          exit 1
+        fi
+
+        MESSAGE="${INPUT_MESSAGE:-Release ${TAG}}"
+
+        # Set up Git.
+        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+        if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ] && [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then
+          echo "Error: Both MINOR_VERSION_TAG_ONLY and MAJOR_VERSION_TAG_ONLY cannot be true."
+          exit 1
+        fi
+
+        if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ]; then
+          git tag -fa "${MINOR}" -m "${MESSAGE}"
+        elif [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then
+          git tag -fa "${MAJOR}" -m "${MESSAGE}"
+        else
+          git tag -fa "${MINOR}" -m "${MESSAGE}"
+          git tag -fa "${MAJOR}" -m "${MESSAGE}"
+        fi
+
+        if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ]; then
+          git push --force origin "${MINOR}"
+        else
+          [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ] || git push --force origin "${MINOR}"
+          git push --force origin "${MAJOR}"
+        fi
+      env:
+        GIT_AUTHOR_NAME: ${{ inputs.git_committer_name }}
+        GIT_AUTHOR_EMAIL: ${{ inputs.git_committer_email }}
+        GIT_COMMITTER_NAME: ${{ inputs.git_committer_name }}
+        GIT_COMMITTER_EMAIL: ${{ inputs.git_committer_email }}
