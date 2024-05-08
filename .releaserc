@@ -7,7 +7,6 @@
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
         ["@semantic-release/exec", {
-            "prepareCmd": 'yq -i eval ".runs.image = \"docker://ghcr.io/splunk/addonfactory-update-semver/addonfactory-update-semver:v${nextRelease.version}\"" action.yml',
             "verifyReleaseCmd": "echo \"version=${nextRelease.version}\" >> $GITHUB_OUTPUT",
             "successCmd": "echo \"new_release_published=${'true'}\" >> $GITHUB_OUTPUT"
         }],
