@@ -1,8 +1,18 @@
-name: 'Update major/minor semver'
-description: 'Updates major/minor release tags on a tag push'
-# credits to github.com/haya14busa/
-author: 'splunk'
+name: "Update major/minor semver"
+description: "Updates major/minor release tags on a tag push"
+author: "Splunk"
 inputs:
+  git_committer_name:
+    description: "Committer name for semver changes"
+    default: "semantic-release-bot"
+  git_committer_email:
+    description: "Committer email address for semver changes"
+    default: "semantic-release-bot"
+  gpg_private_key:
+    description: "GPG private key matching committer email"
+  passphrase:
+    description: "Passphrase for GPG private key"
+
   message:
     description: "Tag message."
     required: false
@@ -12,20 +22,7 @@ inputs:
   minor_version_tag_only:
     description: "Create only minor version tags."
     required: false
-  git_committer_name:
-    description: "Committer name for semver changes"
-    required: false
-    default: "semantic-release-bot"
-  git_committer_email:
-    description: "Committer email address for semver changes"
-    required: false
-    default: "semantic-release-bot"
-  gpg_private_key:
-    description: "GPG private key matching committer email"
-    required: false
-  passphrase:
-    description: "Passphrase for GPG private key"
-    required: false
+
 runs:
   using: "composite"
   steps:
@@ -35,7 +32,6 @@ runs:
         node-version: "20"
     - name: Set up GPG
       uses: crazy-max/ghaction-import-gpg@v6
-      if: ${{ (inputs.gpg_private_key != '') && (inputs.passphrase != '') }}
       with:
         gpg_private_key: ${{ inputs.gpg_private_key }}
         passphrase: ${{ inputs.passphrase }}
@@ -66,12 +62,12 @@ runs:
         fi
 
         if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ]; then
-          git tag -fa "${MINOR}" -m "${MESSAGE}"
+          git tag -s -fa "${MINOR}" -m "${MESSAGE}"
         elif [ "${MAJOR_VERSION_TAG_ONLY}" = "true" ]; then
-          git tag -fa "${MAJOR}" -m "${MESSAGE}"
+          git tag -s -fa "${MAJOR}" -m "${MESSAGE}"
         else
-          git tag -fa "${MINOR}" -m "${MESSAGE}"
-          git tag -fa "${MAJOR}" -m "${MESSAGE}"
+          git tag -s -fa "${MINOR}" -m "${MESSAGE}"
+          git tag -s -fa "${MAJOR}" -m "${MESSAGE}"
         fi
 
         if [ "${MINOR_VERSION_TAG_ONLY}" = "true" ]; then
